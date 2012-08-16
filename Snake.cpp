@@ -49,7 +49,7 @@ bool Coord2::operator ==(const Coord2& c) const
 /****************************************************/
 
 Level::Level(const std::string& file, char id)
-  : _patch("level"),
+  : _patch("levels/level"),
     _ext(".txt"),
     _levelId(id),
     _maxFood('2'),
@@ -463,7 +463,7 @@ TextEndActor::TextEndActor()
 {
 	_director = Director::getInstance();
 
-    if (!_cheeseburger.LoadFromFile("cheeseburger.ttf"))
+    if (!_cheeseburger.LoadFromFile("font/cheeseburger.ttf"))
     {
 		std::cerr << "File Not Found: cheeseburger.ttf" << std::endl;
         throw std::exception();
@@ -501,7 +501,7 @@ SnakeActor::SnakeActor()
 {
 	_director = Director::getInstance();
 	
-	_imgCellSnake.LoadFromFile("snake.png");	
+	_imgCellSnake.LoadFromFile("images/snake.png");	
 	_spriteSnake.SetImage(_imgCellSnake);
 }
 
@@ -581,7 +581,7 @@ WallActor::WallActor()
 {
 	_director = Director::getInstance();
 	
-	_imgCellWall.LoadFromFile("wall.png");
+	_imgCellWall.LoadFromFile("images/wall.png");
 	
 	_spriteWall.SetImage(_imgCellWall);
 }
@@ -620,7 +620,7 @@ FoodActor::FoodActor()
 {
 	_director = Director::getInstance();
 	
-    _imgFood.LoadFromFile("food.png");
+    _imgFood.LoadFromFile("images/food.png");
     _spriteFood.SetImage(_imgFood);
 }
 	
@@ -660,7 +660,7 @@ Game::Game()
 {
 	Director* director = Director::getInstance();
 	
-	Level* level = new Level("level1.txt", '1');
+	Level* level = new Level("levels/level1.txt", '1');
 	
 	director->setLevel (level);
 	director->setSnake (new Snake(level));
