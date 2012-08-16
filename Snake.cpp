@@ -63,55 +63,55 @@ Level::~Level()
 
 void Level::loadCell(char value, unsigned int x, unsigned int y)
 {
-	if (value == 's')
-	{
-		_initialPosSnake.push_back(Coord2(x,y));
-		value = '0';
-	}
-	
-	if (_maxFood < value && value < 's')
-		_maxFood = value;
+    if (value == 's')
+    {
+        _initialPosSnake.push_back(Coord2(x,y));
+        value = '0';
+    }
 
-	_matrix[x][y] = value;
+    if (_maxFood < value && value < 's')
+        _maxFood = value;
+
+    _matrix[x][y] = value;
 }
 
 void Level::loadMap(const std::string& file)
 {
     char value;
     std::ifstream input(file.c_str());
-	
+
     if (!input)
     {
-		std::cerr << "File Not Found: " << file << std::endl;
+        std::cerr << "File Not Found: " << file << std::endl;
         throw std::exception();
     }
 
     for(unsigned int y = 0; y < HEIGHT; y++)
         for(unsigned int x = 0; x < WIDHT; x++)
-        {			
+        {
             input >> value;
-			loadCell(value, x, y);
-		}
+            loadCell(value, x, y);
+        }
 }
 
 char Level::getId() const
 {
-	return _levelId;
+    return _levelId;
 }
 
 std::string Level::getPatch() const
 {
-	return _patch;
+    return _patch;
 }
 
 std::string Level::getExt() const
 {
-	return _ext;
+    return _ext;
 }
 
 const std::list<Coord2>& Level::getInitialPosSnake() const
 {
-	return _initialPosSnake;
+    return _initialPosSnake;
 }
 
 Level::Content Level::whatHave(const Coord2& coor) const
@@ -122,7 +122,7 @@ Level::Content Level::whatHave(const Coord2& coor) const
 Level::Content Level::whatHave(unsigned int x, unsigned  int y) const
 {
     Content content;
-	char value = _matrix[x][y];
+    char value = _matrix[x][y];
 
     if (value == '1')
         content = Wall;
@@ -136,7 +136,7 @@ Level::Content Level::whatHave(unsigned int x, unsigned  int y) const
 
 bool Level::isDone() const
 {
-	return _currentFood > _maxFood;
+    return _currentFood > _maxFood;
 }
 
 void Level::consumeFood(const Coord2& coor)
@@ -158,32 +158,32 @@ Snake::Snake(Level* level)
     _nextPos(RIGHT),
     _level(level)
 {
-	reset();
+    reset();
 }
 
 void Snake::reset()
 {
-	const std::list<Coord2>& initialPos = _level->getInitialPosSnake();
+    const std::list<Coord2>& initialPos = _level->getInitialPosSnake();
 
-	_cells.clear();
-	_nextPos = _actualPos = RIGHT;
+    _cells.clear();
+    _nextPos = _actualPos = RIGHT;
 
-	for(std::list<Coord2>::const_iterator it = initialPos.begin(); it != initialPos.end(); it++)
-		_cells.push_back(*it);
+    for(std::list<Coord2>::const_iterator it = initialPos.begin(); it != initialPos.end(); it++)
+        _cells.push_back(*it);
 }
 
 void Snake::internalMove(Coord2& nextCell)
 {
-	trans(nextCell);
-	Level::Content content = _level->whatHave(nextCell);
+    trans(nextCell);
+    Level::Content content = _level->whatHave(nextCell);
 
     if (content == Level::Food)
         internalMoveWhitFood(nextCell);
-    
+
     else if (content == Level::Wall)
         internalMoveWhitWall(nextCell);
-	
-	else// if (content == Level::Nothing)
+
+    else// if (content == Level::Nothing)
         internalMoveWhitNothing(nextCell);
 }
 
@@ -215,7 +215,7 @@ void Snake::internalMoveWhitNothing(const Coord2& nextCell)
 
 void Snake::internalMoveWhitWall(const Coord2&)
 {
-	_isLive = false;
+    _isLive = false;
 }
 
 bool Snake::isLive()
@@ -240,47 +240,47 @@ bool Snake::autoCollision(const Coord2& nextCell)
 
 void Snake::trans(Coord2& nextCell)
 {
-	if (nextCell.x == int(Level::WIDHT))
-		nextCell.x = 0;
-	else
-	if (nextCell.x == (-1))
-		nextCell.x = Level::WIDHT - 1;
-	else
-	if (nextCell.y == int(Level::HEIGHT))
-		nextCell.y = 0;
-	else
-	if (nextCell.y == (-1))
-		nextCell.y = Level::HEIGHT - 1;
+    if (nextCell.x == int(Level::WIDHT))
+        nextCell.x = 0;
+    else
+    if (nextCell.x == (-1))
+        nextCell.x = Level::WIDHT - 1;
+    else
+    if (nextCell.y == int(Level::HEIGHT))
+        nextCell.y = 0;
+    else
+    if (nextCell.y == (-1))
+        nextCell.y = Level::HEIGHT - 1;
 }
 
 bool Snake::marchaAtras()
 {
-	bool marchaAtras = false;
+    bool marchaAtras = false;
 
     marchaAtras = marchaAtras || (_actualPos == RIGHT && _nextPos == LEFT );
     marchaAtras = marchaAtras || (_actualPos == LEFT  && _nextPos == RIGHT);
     marchaAtras = marchaAtras || (_actualPos == DOWN  && _nextPos == UP   );
     marchaAtras = marchaAtras || (_actualPos == UP    && _nextPos == DOWN );
-    
+
     return marchaAtras;
 }
 
 void Snake::move()
-{    
+{
     bool mAtras = marchaAtras();
 
-	Coord2 nextCell(_cells.back() + _nextPos);
+    Coord2 nextCell(_cells.back() + _nextPos);
 
-	if(mAtras)//si hay marcha atras mantengo el movimiento :)
-	{
-		nextCell = _cells.back() + _actualPos;
-		internalMove(nextCell);
-	}
+    if(mAtras)//si hay marcha atras mantengo el movimiento :)
+    {
+        nextCell = _cells.back() + _actualPos;
+        internalMove(nextCell);
+    }
     else if((_isLive = (_isLive && !autoCollision(nextCell))))
-	{
-		_actualPos = _nextPos;
-		internalMove(nextCell);
-	}
+    {
+        _actualPos = _nextPos;
+        internalMove(nextCell);
+    }
 }
 
 void Snake::changeDirection(const Coord2& newDir)
@@ -290,60 +290,60 @@ void Snake::changeDirection(const Coord2& newDir)
 
 void Snake::setLevel(Level* level)
 {
-	_level = level;
+    _level = level;
 }
 
 /****************************************************/
 
-//TODO: esta configuracion inicial la deberia hacer el director en un metodo 
+//TODO: esta configuracion inicial la deberia hacer el director en un metodo
 // goToSceneGame()
 GameScene::GameScene()
 {
-	Layer* levelLayer    = new LevelLayer();
-	Layer* snakeLayer    = new SnakeLayer();
-	Layer* textGameLayer = new TextGameLayer();
-	
-	levelLayer->addChild(new WallActor());
-	levelLayer->addChild(new FoodActor());
-	
-	snakeLayer->addChild(new SnakeActor());
-	
-	textGameLayer->addChild(new TextEndActor());
+    Layer* levelLayer    = new LevelLayer();
+    Layer* snakeLayer    = new SnakeLayer();
+    Layer* textGameLayer = new TextGameLayer();
 
-	addChild(levelLayer);
-	addChild(snakeLayer);
-	addChild(textGameLayer);
+    levelLayer->addChild(new WallActor());
+    levelLayer->addChild(new FoodActor());
+
+    snakeLayer->addChild(new SnakeActor());
+
+    textGameLayer->addChild(new TextEndActor());
+
+    addChild(levelLayer);
+    addChild(snakeLayer);
+    addChild(textGameLayer);
 }
 
 /****************************************************/
 
 void Layer::addChild(Node* node)
 {
-	nodes.push_back(node);
+    nodes.push_back(node);
 }
 
 void Layer::processEvent(sf::Event& e)
 {
-	for(std::list<Node*>::iterator it = nodes.begin(); it != nodes.end(); it++)
-		(*it)->processEvent(e);
+    for(std::list<Node*>::iterator it = nodes.begin(); it != nodes.end(); it++)
+        (*it)->processEvent(e);
 }
 
 void Layer::updateState()
 {
-	for(std::list<Node*>::iterator it = nodes.begin(); it != nodes.end(); it++)
-		(*it)->updateState();
+    for(std::list<Node*>::iterator it = nodes.begin(); it != nodes.end(); it++)
+        (*it)->updateState();
 }
 
 void Layer::draw()
 {
-	for(std::list<Node*>::iterator it = nodes.begin(); it != nodes.end(); it++)
-		(*it)->draw();
+    for(std::list<Node*>::iterator it = nodes.begin(); it != nodes.end(); it++)
+        (*it)->draw();
 }
 
 Layer::~Layer()
 {
-	for(std::list<Node*>::iterator it = nodes.begin(); it != nodes.end(); it++)
-		delete *it;
+    for(std::list<Node*>::iterator it = nodes.begin(); it != nodes.end(); it++)
+        delete *it;
 
 }
 
@@ -351,13 +351,13 @@ Layer::~Layer()
 
 void LevelLayer::updateState()
 {
-	Layer::updateState();
-	
-	Director* director = Director::getInstance();
-	Level* level = director->getLevel();
-	
-	if(level->isDone())
-		director->goToNextLevel();
+    Layer::updateState();
+
+    Director* director = Director::getInstance();
+    Level* level = director->getLevel();
+
+    if(level->isDone())
+        director->goToNextLevel();
 }
 
 /****************************************************/
@@ -372,7 +372,7 @@ void Scene::stop()
 
 void Director::run()
 {
-	_currentScene->run();
+    _currentScene->run();
 }
 
 void Director::showGameOver()
@@ -390,90 +390,90 @@ void Director::showPauseMenu()
 void Director::showGame()
 {
 }
-	
+
 Scene* Director::getScene()  const
 {
-	return _currentScene;
+    return _currentScene;
 }
 
 Level* Director::getLevel()  const
 {
-	return _level;
+    return _level;
 }
 
 Snake* Director::getSnake()  const
 {
-	return _snake;
+    return _snake;
 }
 
 sf::RenderWindow* Director::getWindow() const
 {
-	return _window;
+    return _window;
 }
-	
+
 void Director::setScene(Scene* scene)
 {
-	_currentScene = scene;
+    _currentScene = scene;
 }
 
 void Director::setLevel(Level* level)
 {
-	delete _level;
-	_level = level;
+    delete _level;
+    _level = level;
 }
 
 void Director::setSnake(Snake* snake)
 {
-	_snake = snake;
+    _snake = snake;
 }
 
 void Director::setWindow(sf::RenderWindow* window)
 {
-	_window = window;
+    _window = window;
 }
 
 void Director::goToNextLevel()
 {
-	char nextLevelId = _level->getId();
-	nextLevelId++;
+    char nextLevelId = _level->getId();
+    nextLevelId++;
 
-	std::string map = "";
-	map += _level->getPatch();
-	map += nextLevelId;
-	map += _level->getExt();
-	
-	delete _level;
-	
-	_level = new Level(map, nextLevelId);
-	_snake->setLevel(_level);
-	_snake->reset();
+    std::string map = "";
+    map += _level->getPatch();
+    map += nextLevelId;
+    map += _level->getExt();
+
+    delete _level;
+
+    _level = new Level(map, nextLevelId);
+    _snake->setLevel(_level);
+    _snake->reset();
 }
-	
+
 Director::~Director()
 {
-	delete _snake;
-	delete _level;
-	delete _window;
-	delete _currentScene;
+    delete _snake;
+    delete _level;
+    delete _window;
+    delete _currentScene;
 }
 
 /****************************************************/
 
 TextEndActor::TextEndActor()
 {
-	_director = Director::getInstance();
+    _director = Director::getInstance();
 
     if (!_cheeseburger.LoadFromFile("font/cheeseburger.ttf"))
     {
-		std::cerr << "File Not Found: cheeseburger.ttf" << std::endl;
+        std::cerr << "File Not Found: cheeseburger.ttf" << std::endl;
         throw std::exception();
-	}
+    }
 
     _textEnd.SetFont(_cheeseburger);
     _textEnd.SetSize(30.f);
     _textEnd.SetColor(sf::Color(255, 255, 255));
     _textEnd.SetPosition(65, 165);
-    
+
     const std::string text = "     Game Over!     \n"
                              "(press escape to exit)";
 
@@ -488,9 +488,9 @@ void TextEndActor::updateState()
 
 void TextEndActor::draw()
 {
-	Snake* snake = _director->getSnake();
-	sf::RenderWindow* window = _director->getWindow();
-    
+    Snake* snake = _director->getSnake();
+    sf::RenderWindow* window = _director->getWindow();
+
     if (!snake->isLive())
         window->Draw(_textEnd);
 }
@@ -499,10 +499,10 @@ void TextEndActor::draw()
 
 SnakeActor::SnakeActor()
 {
-	_director = Director::getInstance();
-	
-	_imgCellSnake.LoadFromFile("images/snake.png");	
-	_spriteSnake.SetImage(_imgCellSnake);
+    _director = Director::getInstance();
+
+    _imgCellSnake.LoadFromFile("images/snake.png");
+    _spriteSnake.SetImage(_imgCellSnake);
 }
 
 void SnakeActor::processEvent(sf::Event& e)
@@ -513,8 +513,8 @@ void SnakeActor::processEvent(sf::Event& e)
 
 void SnakeActor::processKeyPressed(sf::Event& e)
 {
-	Snake* snake  = _director->getSnake();
-	
+    Snake* snake  = _director->getSnake();
+
     switch(e.Key.Code)
     {
         case sf::Key::A : case sf::Key::Left :
@@ -541,7 +541,7 @@ void SnakeActor::processKeyPressed(sf::Event& e)
 void SnakeActor::updateState()
 {
     static float tiempoAcumulado = 0;
-    
+
     Snake* snake = _director->getSnake();
     sf::RenderWindow* window = _director->getWindow();
 
@@ -557,7 +557,7 @@ void SnakeActor::updateState()
 void SnakeActor::draw()
 {
     Coord2 pos;
-	Snake* snake = _director->getSnake();
+    Snake* snake = _director->getSnake();
 
     for(unsigned int i = 0; i < snake->length(); i++)
     {
@@ -579,13 +579,13 @@ void SnakeActor::drawCell(unsigned int x, unsigned int y)
 
 WallActor::WallActor()
 {
-	_director = Director::getInstance();
-	
-	_imgCellWall.LoadFromFile("images/wall.png");
-	
-	_spriteWall.SetImage(_imgCellWall);
+    _director = Director::getInstance();
+
+    _imgCellWall.LoadFromFile("images/wall.png");
+
+    _spriteWall.SetImage(_imgCellWall);
 }
-	
+
 void WallActor::processEvent(sf::Event&)
 {}
 
@@ -594,15 +594,15 @@ void WallActor::updateState()
 
 void WallActor::drawCell(unsigned int x, unsigned int y)
 {
-	Level* level = _director->getLevel();
-	sf::RenderWindow* window = _director->getWindow();
-	
-	Level::Content content = level->whatHave(x, y);
+    Level* level = _director->getLevel();
+    sf::RenderWindow* window = _director->getWindow();
+
+    Level::Content content = level->whatHave(x, y);
 
     x *= Director::WIDHT_CELL;
     y *= Director::HEIGHT_CELL;
 
-	if (content == Level::Wall)
+    if (content == Level::Wall)
     {
         _spriteWall.SetPosition(x, y);
         window->Draw(_spriteWall);
@@ -618,12 +618,12 @@ void WallActor::draw()
 /****************************************************/
 FoodActor::FoodActor()
 {
-	_director = Director::getInstance();
-	
+    _director = Director::getInstance();
+
     _imgFood.LoadFromFile("images/food.png");
     _spriteFood.SetImage(_imgFood);
 }
-	
+
 void FoodActor::processEvent(sf::Event&)
 {}
 
@@ -632,15 +632,15 @@ void FoodActor::updateState()
 
 void FoodActor::drawCell(unsigned int x, unsigned int y)
 {
-	Level* level = _director->getLevel();
-	sf::RenderWindow* window = _director->getWindow();
-	
-	Level::Content content = level->whatHave(x, y);
+    Level* level = _director->getLevel();
+    sf::RenderWindow* window = _director->getWindow();
+
+    Level::Content content = level->whatHave(x, y);
 
     x *= Director::WIDHT_CELL;
     y *= Director::HEIGHT_CELL;
 
-	if (content == Level::Food)
+    if (content == Level::Food)
     {
         _spriteFood.SetPosition(x, y);
         window->Draw(_spriteFood);
@@ -658,46 +658,46 @@ void FoodActor::draw()
 
 Game::Game()
 {
-	Director* director = Director::getInstance();
-	
-	Level* level = new Level("levels/level1.txt", '1');
-	
-	director->setLevel (level);
-	director->setSnake (new Snake(level));
-	
-	director->setWindow(new sf::RenderWindow(sf::VideoMode(390, 390), "Snake"));
-	director->setScene (new GameScene());
+    Director* director = Director::getInstance();
+
+    Level* level = new Level("levels/level1.txt", '1');
+
+    director->setLevel (level);
+    director->setSnake (new Snake(level));
+
+    director->setWindow(new sf::RenderWindow(sf::VideoMode(390, 390), "Snake"));
+    director->setScene (new GameScene());
 }
 
 //TODO: modularizar
 void Game::run()
 {
-	Director* director = Director::getInstance();
-	sf::RenderWindow* window = director->getWindow();
-	Scene* scene = NULL;
-	
-	sf::Event e;
-	
-	while(window->IsOpened())
-	{
-		scene = director->getScene();
+    Director* director = Director::getInstance();
+    sf::RenderWindow* window = director->getWindow();
+    Scene* scene = NULL;
 
-		while(window->GetEvent(e))
-		{
-			scene->processEvent(e);
-			
-			if(e.Type == sf::Event::KeyPressed && e.Key.Code == sf::Key::Escape)
-				window->Close();
+    sf::Event e;
+
+    while(window->IsOpened())
+    {
+        scene = director->getScene();
+
+        while(window->GetEvent(e))
+        {
+            scene->processEvent(e);
+
+            if(e.Type == sf::Event::KeyPressed && e.Key.Code == sf::Key::Escape)
+                window->Close();
             else if (e.Type == sf::Event::Closed)
-				window->Close();
-		}
-        
+                window->Close();
+        }
+
         scene->updateState();
-        
+
         window->Clear(sf::Color(0, 0, 0, 255));
         scene->draw();
         window->Display();
-	}
+    }
 }
 
 Game::~Game()
