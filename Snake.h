@@ -21,13 +21,13 @@ Snake.h: Snake Game  Header file.
 */
 
 //Dependencias: SFML
-//Compilacion para debug: 
+//Compilacion para debug:
 //$ g++ -g -c -Wall -Wextra -ansi -pedantic Snake.cpp
 //$ g++ -g -o Snake Snake.o -lsfml-graphics -lsfml-window -lsfml-system
 //Ejecucion:
 //$ ./Snake
 
-//TODO: Direccion inicial de Snake en cada nivel, en algun lugar del mapa 
+//TODO: Direccion inicial de Snake en cada nivel, en algun lugar del mapa
 //poner una d, u, l, r, en ese lugar poner vacio
 
 //TODO: Ir mostrando puntaje.
@@ -50,8 +50,8 @@ struct Coord2
     Coord2();
     Coord2(int x, int y);
 
-    Coord2 operator+(const Coord2 &c) const;
-    bool operator==(const Coord2 &c) const;
+    Coord2 operator+(const Coord2& c) const;
+    bool operator==(const Coord2& c) const;
 
     int x;
     int y;
@@ -82,24 +82,24 @@ public:
     void consumeFood(const Coord2& coor);
     bool isDone() const;
     char getId() const;
-    
+
     std::string getPatch() const;//deberian ser estaticas
     std::string getExt() const;
-    
+
     const std::list<Coord2>& getInitialPosSnake() const;
 
 private:
     void loadMap(const std::string& file);
     void loadCell(char value, unsigned int x, unsigned int y);
 
-	const std::string _patch;//deberian ser estaticas
-	const std::string _ext;
-	
-	const char _levelId;
+    const std::string _patch;//deberian ser estaticas
+    const std::string _ext;
 
-	std::list<Coord2> _initialPosSnake;
-	char _maxFood;
-	char _currentFood;
+    const char _levelId;
+
+    std::list<Coord2> _initialPosSnake;
+    char _maxFood;
+    char _currentFood;
     char _matrix[WIDHT][HEIGHT];
 };
 
@@ -116,7 +116,7 @@ public:
     bool isLive();
     unsigned int length();
     void reset();
-    
+
     void setLevel(Level* level);
 
     void getCell(unsigned int pos, Coord2& res);
@@ -136,7 +136,7 @@ private:
     bool autoCollision(const Coord2& nextCell);
     bool marchaAtras();
 
-	void trans(Coord2& nextCell);
+    void trans(Coord2& nextCell);
 
     bool _isLive;
     std::vector<Coord2> _cells;
@@ -147,8 +147,8 @@ private:
 
 struct Node
 {
-	virtual ~Node(){}
-	virtual void processEvent(sf::Event& e) = 0;
+    virtual ~Node() {}
+    virtual void processEvent(sf::Event& e) = 0;
     virtual void updateState()              = 0;
     virtual void draw()                     = 0;
 };
@@ -156,116 +156,116 @@ struct Node
 class Layer : public Node
 {
 public:
-	virtual ~Layer();
-	
-	virtual void addChild(Node* n);
-	
-	virtual void processEvent(sf::Event& e);
+    virtual ~Layer();
+
+    virtual void addChild(Node* n);
+
+    virtual void processEvent(sf::Event& e);
     virtual void updateState();
     virtual void draw();
 protected:
-	std::list<Node*> nodes;
+    std::list<Node*> nodes;
 };
 
 struct Scene : public Layer
 {
-	virtual ~Scene() {}
+    virtual ~Scene() {}
 
-	virtual void run();
-	virtual void stop();
+    virtual void run();
+    virtual void stop();
 };
 
 struct Actor : public Node
 {
-	virtual ~Actor(){}
+    virtual ~Actor() {}
 };
 
 class Director
 {
 public:
-	static const unsigned int WIDHT_CELL  = 26;
-	static const unsigned int HEIGHT_CELL = 26;
+    static const unsigned int WIDHT_CELL  = 26;
+    static const unsigned int HEIGHT_CELL = 26;
 
-	static Director* getInstance()
-	{
-		static Director instance;
-		
-		return &instance;
-	}
-	
-	void run();
-	void showGameOver();
-	void showMenu();
-	void showPauseMenu();
-	void showGame();
-	
-	Scene*            getScene()  const;
-	Level*            getLevel()  const;
-	Snake*            getSnake()  const;
-	sf::RenderWindow* getWindow() const;
-	
-	void setScene(Scene* scene);
-	void setLevel(Level* level);
-	void setSnake(Snake* snake);
-	void setWindow(sf::RenderWindow* window);
-	
-	void goToNextLevel();
-	
-	~Director();//delete all members class
+    static Director* getInstance()
+    {
+        static Director instance;
+
+        return &instance;
+    }
+
+    void run();
+    void showGameOver();
+    void showMenu();
+    void showPauseMenu();
+    void showGame();
+
+    Scene*            getScene()  const;
+    Level*            getLevel()  const;
+    Snake*            getSnake()  const;
+    sf::RenderWindow* getWindow() const;
+
+    void setScene(Scene* scene);
+    void setLevel(Level* level);
+    void setSnake(Snake* snake);
+    void setWindow(sf::RenderWindow* window);
+
+    void goToNextLevel();
+
+    ~Director();//delete all members class
 private:
-	Director() {};
-	
-	Scene* _currentScene;
-	sf::RenderWindow* _window;
-	Level* _level;
-	Snake* _snake;
+    Director() {};
+
+    Scene* _currentScene;
+    sf::RenderWindow* _window;
+    Level* _level;
+    Snake* _snake;
 };
 
 struct Game
 {
-	Game();
-	~Game();
-	void run();
+    Game();
+    ~Game();
+    void run();
 };
 
 struct GameScene : public Scene
 {
     GameScene();
-    virtual ~GameScene(){}
+    virtual ~GameScene() {}
 };
 
 struct LevelLayer : public Layer
 {
-	LevelLayer() {}
-	virtual ~LevelLayer(){}
-	virtual void updateState();
+    LevelLayer() {}
+    virtual ~LevelLayer() {}
+    virtual void updateState();
 };
 
 struct TextGameLayer : public Layer //para los puntos, tiempo restante etc.
 {
-	TextGameLayer() {}
-	virtual ~TextGameLayer(){}
+    TextGameLayer() {}
+    virtual ~TextGameLayer() {}
 };
 
 struct SnakeLayer : public Layer
 {
-	SnakeLayer(){}
-	virtual ~SnakeLayer(){}
+    SnakeLayer() {}
+    virtual ~SnakeLayer() {}
 };
 
 class TextEndActor : public Actor
 {
 public:
-	TextEndActor();
-	virtual ~TextEndActor(){}
+    TextEndActor();
+    virtual ~TextEndActor() {}
 private:
-	virtual void processEvent(sf::Event& e);
+    virtual void processEvent(sf::Event& e);
     virtual void updateState();
-    virtual void draw();	
-    
+    virtual void draw();
+
     sf::String _textEnd;
     sf::Font _cheeseburger;
-    
+
     Director* _director;
 };
 
@@ -273,19 +273,19 @@ private:
 class SnakeActor : public Actor
 {
 public:
-	SnakeActor();
-	virtual ~SnakeActor() {}
+    SnakeActor();
+    virtual ~SnakeActor() {}
 private:
-	virtual void processEvent(sf::Event& e);
+    virtual void processEvent(sf::Event& e);
     virtual void updateState();
     virtual void draw();
 
-	void processKeyPressed(sf::Event& e);
-	
+    void processKeyPressed(sf::Event& e);
+
     void drawCell(unsigned int x, unsigned int y);
-    
-	Director* _director;
-    
+
+    Director* _director;
+
     sf::Image _imgCellSnake;
     sf::Sprite _spriteSnake;
 };
@@ -293,37 +293,37 @@ private:
 class WallActor : public Actor
 {
 public:
-	WallActor();
-	~WallActor(){}
-	
+    WallActor();
+    ~WallActor() {}
+
 private:
-	virtual void processEvent(sf::Event& e);
+    virtual void processEvent(sf::Event& e);
     virtual void updateState();
     virtual void draw();
-    
+
     void drawCell(unsigned int x, unsigned int y);
-    
+
     Director* _director;
-    
-	sf::Sprite _spriteWall;
+
+    sf::Sprite _spriteWall;
     sf::Image _imgCellWall;
 };
 
 class FoodActor : public Actor
 {
 public:
-	FoodActor();
-	~FoodActor(){}
+    FoodActor();
+    ~FoodActor() {}
 private:
-	virtual void processEvent(sf::Event& e);
+    virtual void processEvent(sf::Event& e);
     virtual void updateState();
     virtual void draw();
-    
+
     void drawCell(unsigned int x, unsigned int y);
-    
+
     Director* _director;
-    
-	sf::Sprite _spriteFood;
+
+    sf::Sprite _spriteFood;
     sf::Image _imgFood;
 };
 

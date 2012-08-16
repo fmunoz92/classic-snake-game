@@ -29,8 +29,8 @@ Snake.cpp
 /****************************************************/
 
 Coord2::Coord2(int x, int y)
-  : x(x),
-    y(y)
+    : x(x),
+      y(y)
 {}
 
 Coord2::Coord2()
@@ -49,11 +49,11 @@ bool Coord2::operator ==(const Coord2& c) const
 /****************************************************/
 
 Level::Level(const std::string& file, char id)
-  : _patch("levels/level"),
-    _ext(".txt"),
-    _levelId(id),
-    _maxFood('2'),
-    _currentFood('2')
+    : _patch("levels/level"),
+      _ext(".txt"),
+      _levelId(id),
+      _maxFood('2'),
+      _currentFood('2')
 {
     loadMap(file);
 }
@@ -65,7 +65,7 @@ void Level::loadCell(char value, unsigned int x, unsigned int y)
 {
     if (value == 's')
     {
-        _initialPosSnake.push_back(Coord2(x,y));
+        _initialPosSnake.push_back(Coord2(x, y));
         value = '0';
     }
 
@@ -86,8 +86,8 @@ void Level::loadMap(const std::string& file)
         throw std::exception();
     }
 
-    for(unsigned int y = 0; y < HEIGHT; y++)
-        for(unsigned int x = 0; x < WIDHT; x++)
+    for (unsigned int y = 0; y < HEIGHT; y++)
+        for (unsigned int x = 0; x < WIDHT; x++)
         {
             input >> value;
             loadCell(value, x, y);
@@ -153,10 +153,10 @@ const Coord2 Snake::LEFT(-1, 0);
 const Coord2 Snake::RIGHT(1, 0);
 
 Snake::Snake(Level* level)
-  : _isLive(true),
-    _actualPos(4, 0),
-    _nextPos(RIGHT),
-    _level(level)
+    : _isLive(true),
+      _actualPos(4, 0),
+      _nextPos(RIGHT),
+      _level(level)
 {
     reset();
 }
@@ -168,7 +168,7 @@ void Snake::reset()
     _cells.clear();
     _nextPos = _actualPos = RIGHT;
 
-    for(std::list<Coord2>::const_iterator it = initialPos.begin(); it != initialPos.end(); it++)
+    for (std::list<Coord2>::const_iterator it = initialPos.begin(); it != initialPos.end(); it++)
         _cells.push_back(*it);
 }
 
@@ -206,8 +206,8 @@ void Snake::internalMoveWhitFood(const Coord2& nextCell)
 
 void Snake::internalMoveWhitNothing(const Coord2& nextCell)
 {
-    for(unsigned int i = 0; i < _cells.size() - 1; i++)
-        _cells[i] = _cells[i+1];
+    for (unsigned int i = 0; i < _cells.size() - 1; i++)
+        _cells[i] = _cells[i + 1];
 
     const unsigned int lastPos = _cells.size() - 1;
     _cells[lastPos] = nextCell;
@@ -242,14 +242,11 @@ void Snake::trans(Coord2& nextCell)
 {
     if (nextCell.x == int(Level::WIDHT))
         nextCell.x = 0;
-    else
-    if (nextCell.x == (-1))
+    else if (nextCell.x == (-1))
         nextCell.x = Level::WIDHT - 1;
-    else
-    if (nextCell.y == int(Level::HEIGHT))
+    else if (nextCell.y == int(Level::HEIGHT))
         nextCell.y = 0;
-    else
-    if (nextCell.y == (-1))
+    else if (nextCell.y == (-1))
         nextCell.y = Level::HEIGHT - 1;
 }
 
@@ -257,10 +254,10 @@ bool Snake::marchaAtras()
 {
     bool marchaAtras = false;
 
-    marchaAtras = marchaAtras || (_actualPos == RIGHT && _nextPos == LEFT );
+    marchaAtras = marchaAtras || (_actualPos == RIGHT && _nextPos == LEFT);
     marchaAtras = marchaAtras || (_actualPos == LEFT  && _nextPos == RIGHT);
-    marchaAtras = marchaAtras || (_actualPos == DOWN  && _nextPos == UP   );
-    marchaAtras = marchaAtras || (_actualPos == UP    && _nextPos == DOWN );
+    marchaAtras = marchaAtras || (_actualPos == DOWN  && _nextPos == UP);
+    marchaAtras = marchaAtras || (_actualPos == UP    && _nextPos == DOWN);
 
     return marchaAtras;
 }
@@ -271,12 +268,12 @@ void Snake::move()
 
     Coord2 nextCell(_cells.back() + _nextPos);
 
-    if(mAtras)//si hay marcha atras mantengo el movimiento :)
+    if (mAtras) //si hay marcha atras mantengo el movimiento :)
     {
         nextCell = _cells.back() + _actualPos;
         internalMove(nextCell);
     }
-    else if((_isLive = (_isLive && !autoCollision(nextCell))))
+    else if ((_isLive = (_isLive && !autoCollision(nextCell))))
     {
         _actualPos = _nextPos;
         internalMove(nextCell);
@@ -324,25 +321,25 @@ void Layer::addChild(Node* node)
 
 void Layer::processEvent(sf::Event& e)
 {
-    for(std::list<Node*>::iterator it = nodes.begin(); it != nodes.end(); it++)
+    for (std::list<Node*>::iterator it = nodes.begin(); it != nodes.end(); it++)
         (*it)->processEvent(e);
 }
 
 void Layer::updateState()
 {
-    for(std::list<Node*>::iterator it = nodes.begin(); it != nodes.end(); it++)
+    for (std::list<Node*>::iterator it = nodes.begin(); it != nodes.end(); it++)
         (*it)->updateState();
 }
 
 void Layer::draw()
 {
-    for(std::list<Node*>::iterator it = nodes.begin(); it != nodes.end(); it++)
+    for (std::list<Node*>::iterator it = nodes.begin(); it != nodes.end(); it++)
         (*it)->draw();
 }
 
 Layer::~Layer()
 {
-    for(std::list<Node*>::iterator it = nodes.begin(); it != nodes.end(); it++)
+    for (std::list<Node*>::iterator it = nodes.begin(); it != nodes.end(); it++)
         delete *it;
 
 }
@@ -356,7 +353,7 @@ void LevelLayer::updateState()
     Director* director = Director::getInstance();
     Level* level = director->getLevel();
 
-    if(level->isDone())
+    if (level->isDone())
         director->goToNextLevel();
 }
 
@@ -515,26 +512,30 @@ void SnakeActor::processKeyPressed(sf::Event& e)
 {
     Snake* snake  = _director->getSnake();
 
-    switch(e.Key.Code)
+    switch (e.Key.Code)
     {
-        case sf::Key::A : case sf::Key::Left :
+        case sf::Key::A :
+        case sf::Key::Left :
             snake->changeDirection(Snake::LEFT);
-        break;
+            break;
 
-        case sf::Key::D : case sf::Key::Right :
+        case sf::Key::D :
+        case sf::Key::Right :
             snake->changeDirection(Snake::RIGHT);
-        break;
+            break;
 
-        case sf::Key::W : case sf::Key::Up :
+        case sf::Key::W :
+        case sf::Key::Up :
             snake->changeDirection(Snake::UP);
-        break;
+            break;
 
-        case sf::Key::S : case sf::Key::Down :
+        case sf::Key::S :
+        case sf::Key::Down :
             snake->changeDirection(Snake::DOWN);
-        break;
+            break;
 
         default:
-        break;
+            break;
     }
 }
 
@@ -547,7 +548,7 @@ void SnakeActor::updateState()
 
     tiempoAcumulado += window->GetFrameTime();
 
-    if(tiempoAcumulado >= 0.2)
+    if (tiempoAcumulado >= 0.2)
     {
         tiempoAcumulado -= 0.2;
         snake->move();
@@ -559,7 +560,7 @@ void SnakeActor::draw()
     Coord2 pos;
     Snake* snake = _director->getSnake();
 
-    for(unsigned int i = 0; i < snake->length(); i++)
+    for (unsigned int i = 0; i < snake->length(); i++)
     {
         snake->getCell(i, pos);
         drawCell(pos.x, pos.y);
@@ -611,8 +612,8 @@ void WallActor::drawCell(unsigned int x, unsigned int y)
 
 void WallActor::draw()
 {
-    for(unsigned int y = 0; y < Level::HEIGHT; y++)
-        for(unsigned int x = 0; x < Level::WIDHT; x++)
+    for (unsigned int y = 0; y < Level::HEIGHT; y++)
+        for (unsigned int x = 0; x < Level::WIDHT; x++)
             drawCell(x, y);
 }
 /****************************************************/
@@ -649,8 +650,8 @@ void FoodActor::drawCell(unsigned int x, unsigned int y)
 
 void FoodActor::draw()
 {
-    for(unsigned int y = 0; y < Level::HEIGHT; y++)
-        for(unsigned int x = 0; x < Level::WIDHT; x++)
+    for (unsigned int y = 0; y < Level::HEIGHT; y++)
+        for (unsigned int x = 0; x < Level::WIDHT; x++)
             drawCell(x, y);
 }
 
@@ -662,11 +663,11 @@ Game::Game()
 
     Level* level = new Level("levels/level1.txt", '1');
 
-    director->setLevel (level);
-    director->setSnake (new Snake(level));
+    director->setLevel(level);
+    director->setSnake(new Snake(level));
 
     director->setWindow(new sf::RenderWindow(sf::VideoMode(390, 390), "Snake"));
-    director->setScene (new GameScene());
+    director->setScene(new GameScene());
 }
 
 //TODO: modularizar
@@ -678,15 +679,15 @@ void Game::run()
 
     sf::Event e;
 
-    while(window->IsOpened())
+    while (window->IsOpened())
     {
         scene = director->getScene();
 
-        while(window->GetEvent(e))
+        while (window->GetEvent(e))
         {
             scene->processEvent(e);
 
-            if(e.Type == sf::Event::KeyPressed && e.Key.Code == sf::Key::Escape)
+            if (e.Type == sf::Event::KeyPressed && e.Key.Code == sf::Key::Escape)
                 window->Close();
             else if (e.Type == sf::Event::Closed)
                 window->Close();
