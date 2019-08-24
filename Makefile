@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-c -Wall -std=c++11
+CFLAGS=-c -Wall -Wextra -ansi -pedantic -std=c++11
 LDFLAGS=
 LIBFLAGS=-lsfml-graphics -lsfml-window -lsfml-system
 SRC_DIR := ./src
@@ -14,13 +14,12 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(LIBFLAGS)
 
 .cpp.o:
-	$(CC) $(CFLAGS) $< -o $@ $(LIBFLAGS)
+	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	rm *.o $(EXECUTABLE)
+	rm $(wildcard $(SRC_DIR)/*.o) $(wildcard $(SRC_DIR)/*/*.o) $(EXECUTABLE)
 
 install:
-	#install -s $(EXECUTABLE) $(BINDIR)
 	sudo cp -u $(EXECUTABLE) $(BINDIR)
 uninstall:
 	sudo rm $(BINDIR)/$(EXECUTABLE)
