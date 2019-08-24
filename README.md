@@ -1,13 +1,12 @@
 # classic-snake-game
 
-Dependencies: SFML
+Dependencies: SFML 2.5
 
 Compilation:
 ```bash
-$ g++ -g -c -Wall -Wextra -ansi -pedantic Snake.cpp
-$ g++ -g -o Snake Snake.o -lsfml-graphics -lsfml-window -lsfml-system
+$ make
 ```
 Run:
 ```bash
-$ ./Snake
+$ ./snake
 ```
