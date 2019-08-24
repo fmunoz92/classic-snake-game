@@ -203,11 +203,13 @@ public:
     Level*            getLevel()  const;
     Snake*            getSnake()  const;
     sf::RenderWindow* getWindow() const;
+    sf::Clock* getClock() const;
 
     void setScene(Scene* scene);
     void setLevel(Level* level);
     void setSnake(Snake* snake);
     void setWindow(sf::RenderWindow* window);
+    void setClock(sf::Clock* clock);
 
     void goToNextLevel();
 
@@ -215,8 +217,10 @@ public:
 private:
     Director() {};
 
-    Scene* _currentScene;
     sf::RenderWindow* _window;
+    sf::Clock* _clock;
+
+    Scene* _currentScene;
     Level* _level;
     Snake* _snake;
 };
@@ -263,7 +267,7 @@ private:
     virtual void updateState();
     virtual void draw();
 
-    sf::String _textEnd;
+    sf::Text _textEnd;
     sf::Font _cheeseburger;
 
     Director* _director;
@@ -286,7 +290,7 @@ private:
 
     Director* _director;
 
-    sf::Image _imgCellSnake;
+    sf::Texture _imgCellSnake;
     sf::Sprite _spriteSnake;
 };
 
@@ -306,7 +310,7 @@ private:
     Director* _director;
 
     sf::Sprite _spriteWall;
-    sf::Image _imgCellWall;
+    sf::Texture _imgCellWall;
 };
 
 class FoodActor : public Actor
@@ -324,7 +328,7 @@ private:
     Director* _director;
 
     sf::Sprite _spriteFood;
-    sf::Image _imgFood;
+    sf::Texture _imgFood;
 };
 
 int main();

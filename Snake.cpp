@@ -408,6 +408,11 @@ sf::RenderWindow* Director::getWindow() const
     return _window;
 }
 
+sf::Clock* Director::getClock() const
+{
+    return _clock;
+}
+
 void Director::setScene(Scene* scene)
 {
     _currentScene = scene;
@@ -427,6 +432,11 @@ void Director::setSnake(Snake* snake)
 void Director::setWindow(sf::RenderWindow* window)
 {
     _window = window;
+}
+
+void Director::setClock(sf::Clock* clock)
+{
+    _clock = clock;
 }
 
 void Director::goToNextLevel()
@@ -452,6 +462,7 @@ Director::~Director()
     delete _level;
     delete _window;
     delete _currentScene;
+    delete _clock;
 }
 
 /****************************************************/
@@ -460,21 +471,21 @@ TextEndActor::TextEndActor()
 {
     _director = Director::getInstance();
 
-    if (!_cheeseburger.LoadFromFile("font/cheeseburger.ttf"))
+    if (!_cheeseburger.loadFromFile("font/cheeseburger.ttf"))
     {
         std::cerr << "File Not Found: cheeseburger.ttf" << std::endl;
         throw std::exception();
     }
 
-    _textEnd.SetFont(_cheeseburger);
-    _textEnd.SetSize(30.f);
-    _textEnd.SetColor(sf::Color(255, 255, 255));
-    _textEnd.SetPosition(65, 165);
+    _textEnd.setFont(_cheeseburger);
+    _textEnd.setCharacterSize(30.f);
+    _textEnd.setColor(sf::Color(255, 255, 255));
+    _textEnd.setPosition(65, 165);
 
     const std::string text = "     Game Over!     \n"
                              "(press escape to exit)";
 
-    _textEnd.SetText(text);
+    _textEnd.setString(text);
 }
 
 void TextEndActor::processEvent(sf::Event&)
@@ -489,7 +500,7 @@ void TextEndActor::draw()
     sf::RenderWindow* window = _director->getWindow();
 
     if (!snake->isLive())
-        window->Draw(_textEnd);
+        window->draw(_textEnd);
 }
 
 /****************************************************/
@@ -498,13 +509,13 @@ SnakeActor::SnakeActor()
 {
     _director = Director::getInstance();
 
-    _imgCellSnake.LoadFromFile("images/snake.png");
-    _spriteSnake.SetImage(_imgCellSnake);
+    _imgCellSnake.loadFromFile("images/snake.png");
+    _spriteSnake.setTexture(_imgCellSnake);
 }
 
 void SnakeActor::processEvent(sf::Event& e)
 {
-    if (e.Type == sf::Event::KeyPressed)
+    if (e.type == sf::Event::KeyPressed)
         processKeyPressed(e);
 }
 
@@ -512,25 +523,25 @@ void SnakeActor::processKeyPressed(sf::Event& e)
 {
     Snake* snake  = _director->getSnake();
 
-    switch (e.Key.Code)
+    switch (e.key.code)
     {
-        case sf::Key::A :
-        case sf::Key::Left :
+        case sf::Keyboard::A :
+        case sf::Keyboard::Left :
             snake->changeDirection(Snake::LEFT);
             break;
 
-        case sf::Key::D :
-        case sf::Key::Right :
+        case sf::Keyboard::D :
+        case sf::Keyboard::Right :
             snake->changeDirection(Snake::RIGHT);
             break;
 
-        case sf::Key::W :
-        case sf::Key::Up :
+        case sf::Keyboard::W :
+        case sf::Keyboard::Up :
             snake->changeDirection(Snake::UP);
             break;
 
-        case sf::Key::S :
-        case sf::Key::Down :
+        case sf::Keyboard::S :
+        case sf::Keyboard::Down :
             snake->changeDirection(Snake::DOWN);
             break;
 
@@ -541,16 +552,13 @@ void SnakeActor::processKeyPressed(sf::Event& e)
 
 void SnakeActor::updateState()
 {
-    static float tiempoAcumulado = 0;
-
+    sf::Time updateTime   = sf::seconds(0.2f);
     Snake* snake = _director->getSnake();
-    sf::RenderWindow* window = _director->getWindow();
+    sf::Clock* clock = _director->getClock();
 
-    tiempoAcumulado += window->GetFrameTime();
-
-    if (tiempoAcumulado >= 0.2)
+    if (clock->getElapsedTime() > updateTime)
     {
-        tiempoAcumulado -= 0.2;
+        clock->restart(); // TODO: move this logic
         snake->move();
     }
 }
@@ -572,8 +580,8 @@ void SnakeActor::drawCell(unsigned int x, unsigned int y)
     x *= Director::WIDHT_CELL;
     y *= Director::HEIGHT_CELL;
 
-    _spriteSnake.SetPosition(x, y);
-    _director->getWindow()->Draw(_spriteSnake);
+    _spriteSnake.setPosition(x, y);
+    _director->getWindow()->draw(_spriteSnake);
 }
 
 /****************************************************/
@@ -582,9 +590,9 @@ WallActor::WallActor()
 {
     _director = Director::getInstance();
 
-    _imgCellWall.LoadFromFile("images/wall.png");
+    _imgCellWall.loadFromFile("images/wall.png");
 
-    _spriteWall.SetImage(_imgCellWall);
+    _spriteWall.setTexture(_imgCellWall);
 }
 
 void WallActor::processEvent(sf::Event&)
@@ -605,8 +613,8 @@ void WallActor::drawCell(unsigned int x, unsigned int y)
 
     if (content == Level::Wall)
     {
-        _spriteWall.SetPosition(x, y);
-        window->Draw(_spriteWall);
+        _spriteWall.setPosition(x, y);
+        window->draw(_spriteWall);
     }
 }
 
@@ -621,8 +629,8 @@ FoodActor::FoodActor()
 {
     _director = Director::getInstance();
 
-    _imgFood.LoadFromFile("images/food.png");
-    _spriteFood.SetImage(_imgFood);
+    _imgFood.loadFromFile("images/food.png");
+    _spriteFood.setTexture(_imgFood);
 }
 
 void FoodActor::processEvent(sf::Event&)
@@ -643,8 +651,8 @@ void FoodActor::drawCell(unsigned int x, unsigned int y)
 
     if (content == Level::Food)
     {
-        _spriteFood.SetPosition(x, y);
-        window->Draw(_spriteFood);
+        _spriteFood.setPosition(x, y);
+        window->draw(_spriteFood);
     }
 }
 
@@ -667,6 +675,7 @@ Game::Game()
     director->setSnake(new Snake(level));
 
     director->setWindow(new sf::RenderWindow(sf::VideoMode(390, 390), "Snake"));
+    director->setClock(new sf::Clock());
     director->setScene(new GameScene());
 }
 
@@ -679,25 +688,27 @@ void Game::run()
 
     sf::Event e;
 
-    while (window->IsOpened())
+    while (window->isOpen())
     {
         scene = director->getScene();
 
-        while (window->GetEvent(e))
+
+        sf::Event e;
+        while (window->pollEvent(e))
         {
             scene->processEvent(e);
 
-            if (e.Type == sf::Event::KeyPressed && e.Key.Code == sf::Key::Escape)
-                window->Close();
-            else if (e.Type == sf::Event::Closed)
-                window->Close();
+            if (e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::Escape)
+                window->close();
+            else if (e.type == sf::Event::Closed)
+                window->close();
         }
 
         scene->updateState();
 
-        window->Clear(sf::Color(0, 0, 0, 255));
+        window->clear(sf::Color(0, 0, 0, 255));
         scene->draw();
-        window->Display();
+        window->display();
     }
 }
 
